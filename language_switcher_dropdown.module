@@ -1,0 +1,90 @@
+<?php
+/**
+ * @file
+ * Enhances the core Language Switcher block by displaying it as a dropdown
+ * menu.
+ */
+
+/**
+ * Implements hook_form_FORM_ID_alter() for layout_block_configure_form.
+ */
+function language_switcher_dropdown_form_layout_block_configure_form_alter(&$form, &$form_state, $form_id) {
+  $layout = $form_state['layout']->name;
+  $uuid = $form_state['block']->uuid;
+  $settings = config_get('layout.layout.' . $layout, 'content.' . $uuid . '.data.settings.block_settings');
+
+  // Add block settings container if it doesn't already exist.
+  if (empty($form['block_settings'])) {
+    $form['block_settings'] = array(
+      '#type' => 'container',
+      '#id' => 'layout-block-settings',
+    );
+  }
+
+  // Add settings to language switcher block.
+  $form['block_settings']['language_switcher_dropdown_langcode'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Display language codes instead of names'),
+    '#description' => t("When enabled, languages will be displayed with their code rather than their name (e.g. 'en' as opposed to 'English')."),
+    '#default_value' => $settings['language_switcher_dropdown_langcode'],
+  );
+  $form['block_settings']['language_switcher_dropdown_menu'] = array(
+    '#type' => 'select',
+    '#title' => t('Menu text'),
+    '#description' => t("The text to display as the dropdown menu. When 'The current language' is chosen, its link will be hidden from the menu to avoid duplication."),
+    '#options' => array(
+      'language' => t('The current language'),
+      'custom' => t('Custom text'),
+    ),
+    '#default_value' => $settings['language_switcher_dropdown_menu'],
+  );
+  $form['block_settings']['language_switcher_dropdown_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Custom menu text'),
+    '#default_value' => $settings['language_switcher_dropdown_text'],
+    '#states' => array(
+      'visible' => array(
+       ':input[name$="language_switcher_dropdown_menu]"]' => array('value' => 'custom'),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_view_MODULE_DELTA_alter() for locale_language.
+ */
+function language_switcher_dropdown_block_view_locale_language_alter(&$data, $block) {
+  // Get current language and settings.
+  global $language;
+  $class = 'language-switcher-dropdown';
+  $langcode = $block->settings['block_settings']['language_switcher_dropdown_langcode'];
+  $menu = $block->settings['block_settings']['language_switcher_dropdown_menu'];
+  if ($menu == 'language') {
+    $class .= ' hide-active-language';
+    $text = $langcode ? $language->langcode : $language->name;
+  }
+  else {
+    $text = $block->settings['block_settings']['language_switcher_dropdown_text'];
+  }
+
+  // Alter links to display language code.
+  // @see locale_block_view()
+  if ($langcode) {
+    $path = backdrop_is_front_page() ? '<front>' : $_GET['q'];
+    $links = language_negotiation_get_switch_links('language', $path);
+    foreach ($links->links as &$link) {
+      $link['title'] = $link['language']->langcode;
+    }
+    $class = "language-switcher-{$links->provider}";
+    $variables = array('links' => $links->links, 'attributes' => array('class' => array($class)));
+    $data['content']['#markup'] = theme('links', $variables);
+  }
+
+  // Wrap language links in a custom div to use as the dropdown menu.
+  $markup = $data['content']['#markup'];
+  $data['content']['#markup'] = '<div class="' . $class . '" tabindex="0">' . $text . $markup . '</div>';
+
+  // Add CSS.
+  backdrop_add_css(backdrop_get_path('module', 'language_switcher_dropdown') . '/css/language_switcher_dropdown.css');
+}
+

@@ -1,0 +1,7 @@
+name = Language Switcher Dropdown
+description = Enhances the core Language Switcher block by displaying it as a dropdown menu.
+backdrop = 1.x
+type = module
+dependencies[] = locale
+package = Translation
+

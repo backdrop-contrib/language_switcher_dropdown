@@ -1,0 +1,27 @@
+/**
+ * Dropdown menu styles for the Language Switcher block.
+ */
+
+.block-locale-language .language-switcher-dropdown {
+  cursor: pointer;
+  position: relative;
+}
+
+.block-locale-language .language-switcher-dropdown:hover > ul,
+.block-locale-language .language-switcher-dropdown:active > ul,
+.block-locale-language .language-switcher-dropdown:focus > ul {
+  display: block;
+}
+
+.block-locale-language ul.language-switcher-locale-url {
+  display: none;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+}
+
+.block-locale-language .language-switcher-dropdown.hide-active-language ul.language-switcher-locale-url li.active {
+  display: none;
+}
+
