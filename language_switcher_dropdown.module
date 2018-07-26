@@ -56,11 +56,11 @@ function language_switcher_dropdown_form_layout_block_configure_form_alter(&$for
 function language_switcher_dropdown_block_view_locale_language_alter(&$data, $block) {
   // Get current language and settings.
   global $language;
-  $class = 'language-switcher-dropdown';
+  $menu_class = 'language-switcher-dropdown';
   $langcode = $block->settings['block_settings']['language_switcher_dropdown_langcode'];
   $menu = $block->settings['block_settings']['language_switcher_dropdown_menu'];
   if ($menu == 'language') {
-    $class .= ' hide-active-language';
+    $menu_class .= ' hide-active-language';
     $text = $langcode ? $language->langcode : $language->name;
   }
   else {
@@ -82,7 +82,7 @@ function language_switcher_dropdown_block_view_locale_language_alter(&$data, $bl
 
   // Wrap language links in a custom div to use as the dropdown menu.
   $markup = $data['content']['#markup'];
-  $data['content']['#markup'] = '<div class="' . $class . '" tabindex="0">' . $text . $markup . '</div>';
+  $data['content']['#markup'] = '<div class="' . $menu_class . '" tabindex="0">' . $text . $markup . '</div>';
 
   // Add CSS.
   backdrop_add_css(backdrop_get_path('module', 'language_switcher_dropdown') . '/css/language_switcher_dropdown.css');
