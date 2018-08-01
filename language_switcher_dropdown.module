@@ -9,8 +9,15 @@
  * Implements hook_form_FORM_ID_alter() for layout_block_configure_form.
  */
 function language_switcher_dropdown_form_layout_block_configure_form_alter(&$form, &$form_state, $form_id) {
+  $block = $form_state['block'];
+
+  // We're only interested in the 'locale--language' block.
+  if ($block->module != 'locale' || $block->delta != 'language') {
+    return;
+  }
+
   $layout = $form_state['layout']->name;
-  $uuid = $form_state['block']->uuid;
+  $uuid = $block->uuid;
   $settings = config_get('layout.layout.' . $layout, 'content.' . $uuid . '.data.settings.block_settings');
 
   // Add block settings container if it doesn't already exist.
