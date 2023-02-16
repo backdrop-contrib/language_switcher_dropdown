@@ -27,7 +27,7 @@ https://github.com/backdrop-contrib/language_switcher_dropdown/issues.
 Current Maintainers
 -------------------
 
-- Peter Anderson (https://github.com/BWPanda).
+- Seeking maintainer(s)
 
 License
 -------
